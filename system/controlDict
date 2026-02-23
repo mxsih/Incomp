@@ -1,0 +1,47 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2412                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+application     pimpleFoam;
+
+startFrom       startTime;
+startTime       0;
+
+stopAt          endTime;
+endTime         2;
+
+// Start with a larger initial time step so you don't waste time on tiny dt
+deltaT              5e-3;        // was 1e-3
+
+adjustableTimeStep  yes;
+maxCo               1;         // keep conservative for accuracy
+maxDeltaT           5e-2;        // was 0.2 (limits big jumps in dt)
+
+// Write settings (keep I/O reasonable and predictable)
+writeControl        adjustableRunTime;
+writeInterval       0.1;         // write every 0.1 s of physical time
+
+purgeWrite          0;
+
+writeFormat     ascii;
+writePrecision      8;
+writeCompression    off;
+
+timeFormat          general;
+timePrecision       6;
+
+runTimeModifiable   true;
+
+// ************************************************************************* //

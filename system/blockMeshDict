@@ -1,0 +1,125 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2412                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+convertToMeters 1;
+
+// Domain sizes chosen to match your earlier logs (volume ~ 48):
+// Lx = 6, Ly = 2, Lz = 4
+// Periodic in x and z, walls at y=0 and y=2.
+// Two blocks in y to refine both walls symmetrically.
+
+vertices
+(
+    (0 0 0)    // 0
+    (6 0 0)    // 1
+    (6 1 0)    // 2
+    (0 1 0)    // 3
+    (0 0 4)    // 4
+    (6 0 4)    // 5
+    (6 1 4)    // 6
+    (0 1 4)    // 7
+    (0 2 0)    // 8
+    (6 2 0)    // 9
+    (6 2 4)    // 10
+    (0 2 4)    // 11
+);
+
+blocks
+(
+    // (Nx Ny Nz) with Ny split into two halves (bottom/top)
+    // Total cells = 128*128*48 = 786432
+    hex (0 1 2 3 4 5 6 7)      (128 64 48) simpleGrading (1 15 1)        // refine near bottom wall (y=0)
+    hex (3 2 9 8 7 6 10 11)    (128 64 48) simpleGrading (1 0.0666667 1) // refine near top wall (y=2)
+);
+
+edges
+(
+);
+
+boundary
+(
+    xMin
+    {
+        type            cyclic;
+        neighbourPatch  xMax;
+        matchTolerance  1e-6;
+        faces
+        (
+            (0 3 7 4)
+            (3 8 11 7)
+        );
+    }
+
+    xMax
+    {
+        type            cyclic;
+        neighbourPatch  xMin;
+        matchTolerance  1e-6;
+        faces
+        (
+            (1 5 6 2)
+            (2 6 10 9)
+        );
+    }
+
+    zMin
+    {
+        type            cyclic;
+        neighbourPatch  zMax;
+        matchTolerance  1e-6;
+        faces
+        (
+            (0 1 2 3)
+            (3 2 9 8)
+        );
+    }
+
+    zMax
+    {
+        type            cyclic;
+        neighbourPatch  zMin;
+        matchTolerance  1e-6;
+        faces
+        (
+            (4 7 6 5)
+            (7 11 10 6)
+        );
+    }
+
+    bottomWall
+    {
+        type            wall;
+        faces
+        (
+            (0 1 5 4)
+        );
+    }
+
+    topWall
+    {
+        type            wall;
+        faces
+        (
+            (8 9 10 11)
+        );
+    }
+);
+
+mergePatchPairs
+(
+);
+
+// ************************************************************************* //
