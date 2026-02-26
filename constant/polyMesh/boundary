@@ -22,8 +22,10 @@ FoamFile
         inGroups        List<word> 1(cyclic);
         nFaces          6144;
         startFace       2330624;
-        matchTolerance  0.0001;
+        matchTolerance  1e-06;
         neighbourPatch  xMax;
+        transformType   translational;
+        separation      (-6 0 0);
     }
     xMax
     {
@@ -31,8 +33,10 @@ FoamFile
         inGroups        List<word> 1(cyclic);
         nFaces          6144;
         startFace       2336768;
-        matchTolerance  0.0001;
+        matchTolerance  1e-06;
         neighbourPatch  xMin;
+        transformType   translational;
+        separation      (6 0 0);
     }
     zMin
     {
@@ -40,8 +44,10 @@ FoamFile
         inGroups        List<word> 1(cyclic);
         nFaces          16384;
         startFace       2342912;
-        matchTolerance  0.0001;
+        matchTolerance  1e-06;
         neighbourPatch  zMax;
+        transformType   translational;
+        separation      (0 0 -4);
     }
     zMax
     {
@@ -49,8 +55,10 @@ FoamFile
         inGroups        List<word> 1(cyclic);
         nFaces          16384;
         startFace       2359296;
-        matchTolerance  0.0001;
+        matchTolerance  1e-06;
         neighbourPatch  zMin;
+        transformType   translational;
+        separation      (0 0 4);
     }
     bottomWall
     {

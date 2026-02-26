@@ -90,8 +90,8 @@ def main() -> None:
     # or
     #   internalField nonuniform List<vector> ... );
     txtU2, nsubs = re.subn(
-        r"internalField\s+(?:uniform\s+\([^\)]+\)|nonuniform\s+List<vector>\s*\n\d+\s*\n\([\s\S]*?\)\s*\)\s*;)\s*;",
-        new_internal.strip() + "\n",
+        r"internalField\s+(?:uniform\s+\([^\)]+\)|nonuniform\s+List<vector>\s*\n\d+\s*\n\([\s\S]*?\)\s*);",
+        new_internal.strip(),
         txtU,
         count=1,
         flags=re.M

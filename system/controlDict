@@ -20,7 +20,7 @@ startFrom       startTime;
 startTime       0;
 
 stopAt          endTime;
-endTime         2;
+endTime         3;
 
 // Start with a larger initial time step so you don't waste time on tiny dt
 deltaT              5e-3;        // was 1e-3

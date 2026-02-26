@@ -38,14 +38,14 @@ echo
 echo "Running decomposePar..."
 decomposePar -force > log.decomposePar 2>&1
 
-echo "Running foamRun (incompressibleFluid) in parallel..."
+echo "Running pimpleFoam in parallel..."
 set +e
-mpirun -np "$NP" foamRun -solver incompressibleFluid -parallel 2>&1 | tee log.foamRun
+mpirun -np "$NP" pimpleFoam -parallel 2>&1 | tee log.pimpleFoam
 foam_rc=${PIPESTATUS[0]}
 set -e
 
 if [[ $foam_rc -ne 0 ]]; then
-  echo "foamRun failed with exit code $foam_rc"
+  echo "pimpleFoam failed with exit code $foam_rc"
   exit $foam_rc
 fi
 
