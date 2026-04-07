@@ -1,4 +1,4 @@
-# channelPeriodic OpenFOAM: NACA 0012 Airfoil Simulation
+# Incompressible channelPeriodic flow Simulation with OpenFOAM
 
 ![OpenFOAM Version](https://img.shields.io/badge/OpenFOAM-v2512-blue?logo=openfoam)
 ![License](https://img.shields.io/badge/License-MIT-green)
