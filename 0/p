@@ -46,6 +46,11 @@ boundaryField
     {
         type            zeroGradient;
     }
+
+    NACA0012
+    {
+        type            zeroGradient;
+    }
 }
 
 // ************************************************************************* //

@@ -17,7 +17,7 @@ echo "Deleting time directories (keeps 0/)..."
 foamListTimes -rm
 
 echo "Deleting postProcessing, logs, processor dirs..."
-rm -rf processor* postProcessing log.* PostPr* 2>/dev/null || true
+rm -rf processor* processors* postProcessing log.* PostPr* 2>/dev/null || true
 echo "Cleanup done."
 echo
 
@@ -36,16 +36,16 @@ echo "decomposeParDict updated."
 echo
 
 echo "Running decomposePar..."
-decomposePar -force > log.decomposePar 2>&1
+decomposePar -force -fileHandler collated > log.decomposePar 2>&1
 
-echo "Running foamRun (incompressibleFluid) in parallel..."
+echo "Running pimpleFoam in parallel..."
 set +e
-mpirun -np "$NP" foamRun -solver incompressibleFluid -parallel 2>&1 | tee log.foamRun
+mpirun -np "$NP" pimpleFoam -parallel -fileHandler collated 2>&1 | tee log.pimpleFoam
 foam_rc=${PIPESTATUS[0]}
 set -e
 
 if [[ $foam_rc -ne 0 ]]; then
-  echo "foamRun failed with exit code $foam_rc"
+  echo "pimpleFoam failed with exit code $foam_rc"
   exit $foam_rc
 fi
 
@@ -58,14 +58,14 @@ echo
 # -------------------------------------------------------
 echo "Reconstructing results (only if time directories exist)..."
 
-# Look for any "processor*/<time>" directories where <time> is numeric (e.g. 0.005, 0.01, 0.05)
-if find processor* -maxdepth 1 -type d -regextype posix-extended \
+# Look for any "processors*/<time>" directories where <time> is numeric (e.g. 0.005, 0.01, 0.05)
+if find processors* -maxdepth 1 -type d -regextype posix-extended \
       -regex '.*/[0-9]+(\.[0-9]+)?' -print -quit 2>/dev/null | grep -q .; then
-  reconstructPar > log.reconstructPar 2>&1 || {
+  reconstructPar -fileHandler collated > log.reconstructPar 2>&1 || {
     echo "reconstructPar returned non-zero. See log.reconstructPar (continuing anyway)."
   }
 else
-  echo "No written time directories found in processor* dirs. Skipping reconstructPar."
+  echo "No written time directories found in processors* dirs. Skipping reconstructPar."
 fi
 
 echo

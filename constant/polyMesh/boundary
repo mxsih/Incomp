@@ -1,70 +1,83 @@
 /*--------------------------------*- C++ -*----------------------------------*\
-  =========                 |
-  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-   \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Version:  13
-     \\/     M anipulation  |
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
 FoamFile
 {
-    format      ascii;
+    version     2.0;
+    format      binary;
+    arch        "LSB;label=32;scalar=64";
     class       polyBoundaryMesh;
     location    "constant/polyMesh";
     object      boundary;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-6
+7
 (
     xMin
     {
         type            cyclic;
-        inGroups        List<word> 1(cyclic);
+        inGroups        1(cyclic);
         nFaces          6144;
-        startFace       2330624;
-        matchTolerance  0.0001;
+        startFace       4385218;
+        matchTolerance  1e-06;
+        transform       unknown;
         neighbourPatch  xMax;
     }
     xMax
     {
         type            cyclic;
-        inGroups        List<word> 1(cyclic);
+        inGroups        1(cyclic);
         nFaces          6144;
-        startFace       2336768;
-        matchTolerance  0.0001;
+        startFace       4391362;
+        matchTolerance  1e-06;
+        transform       unknown;
         neighbourPatch  xMin;
     }
     zMin
     {
         type            cyclic;
-        inGroups        List<word> 1(cyclic);
+        inGroups        1(cyclic);
         nFaces          16384;
-        startFace       2342912;
-        matchTolerance  0.0001;
+        startFace       4397506;
+        matchTolerance  1e-06;
+        transform       unknown;
         neighbourPatch  zMax;
     }
     zMax
     {
         type            cyclic;
-        inGroups        List<word> 1(cyclic);
+        inGroups        1(cyclic);
         nFaces          16384;
-        startFace       2359296;
-        matchTolerance  0.0001;
+        startFace       4413890;
+        matchTolerance  1e-06;
+        transform       unknown;
         neighbourPatch  zMin;
     }
     bottomWall
     {
         type            wall;
-        inGroups        List<word> 1(wall);
+        inGroups        1(wall);
         nFaces          6144;
-        startFace       2375680;
+        startFace       4430274;
     }
     topWall
     {
         type            wall;
-        inGroups        List<word> 1(wall);
+        inGroups        1(wall);
         nFaces          6144;
-        startFace       2381824;
+        startFace       4436418;
+    }
+    NACA0012
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          38132;
+        startFace       4442562;
     }
 )
 

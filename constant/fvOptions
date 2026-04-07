@@ -1,0 +1,33 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2412                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      fvOptions;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+meanVelocity
+{
+    type            meanVelocityForce;
+    active          yes;
+
+    meanVelocityForceCoeffs
+    {
+        selectionMode   all;
+        fields          (U);      // <-- REQUIRED by your build
+
+        Ubar            (1 0 0);
+        direction       (1 0 0);
+        relaxation      0.2;
+    }
+}
+
+// ************************************************************************* //

@@ -58,7 +58,7 @@ PIMPLE
     // Start simple/stable
     nOuterCorrectors          1;
     nCorrectors               2;
-    nNonOrthogonalCorrectors  0;
+    nNonOrthogonalCorrectors  2;
 
     // Required for fully periodic pressure (anchors the nullspace)
     pRefCell                  0;

@@ -7,14 +7,15 @@ Requirements:
   - Run first: postProcess -func writeCellCentres -time 0
     (this creates 0/C)
 
-Usage (from anywhere):
-  python3 /path/to/channelPeriodic/makeNoiseU.py
+Usage:
+  python3 makeNoiseU.py
 
 What it does:
   - Reads 0/C to get number of cells
-  - Builds a nonuniform internalField for 0/U with random noise in Uy and Uz (Ux=0)
+  - Builds a nonuniform internalField for 0/U with random noise in Ux, Uy and Uz
+  - Ux noise is around 1.0, Uy and Uz noise is around 0.0
   - Keeps boundaryField untouched
-  - Saves backup: 0/U.bak
+  - Saves backup: 0/U.bak (if not already exists)
 """
 
 import re
@@ -24,14 +25,14 @@ import numpy as np
 
 
 def main() -> None:
-    # Always use the script location as the case root (safe if you run it from system/)
+    # Always use the script location as the case root
     case = Path(__file__).resolve().parent
     Ufile = case / "0" / "U"
     Cfile = case / "0" / "C"
 
     # ---------------- USER KNOBS ----------------
-    amp = 0.1   # noise amplitude in m/s (try 0.005–0.05 depending on your bulk velocity)
-    seed = 7     # random seed for reproducibility
+    amp = 0.5     # noise amplitude for all components
+    seed = 7      # random seed for reproducibility
     # --------------------------------------------
 
     print(f"[makeNoiseU] case = {case}")
@@ -64,15 +65,21 @@ def main() -> None:
 
     rng = np.random.default_rng(seed)
 
-    # Random perturbations (zero-mean) in y and z only; keep x = 0 initially
-    Uy = rng.standard_normal(nCells)
-    Uz = rng.standard_normal(nCells)
+    # Random perturbations (zero-mean) using uniform distribution [-amp, amp]
+    Ux = rng.uniform(-amp, amp, nCells)
+    Uy = rng.uniform(-amp, amp, nCells)
+    Uz = rng.uniform(-amp, amp, nCells)
+    
+    # Zero-mean the noise to avoid global bias
+    Ux -= Ux.mean()
     Uy -= Uy.mean()
     Uz -= Uz.mean()
 
-    U = np.ones((nCells, 3))
-    U[:, 1] = amp * Uy
-    U[:, 2] = amp * Uz
+    # Create the velocity field: Ux around 1.0, Uy and Uz around 0.0
+    U = np.zeros((nCells, 3))
+    U[:, 0] = 1.0 + Ux
+    U[:, 1] = Uy
+    U[:, 2] = Uz
 
     # Build OpenFOAM 'nonuniform List<vector>' internalField block
     Ulist = "\n".join(f"({u[0]:.8e} {u[1]:.8e} {u[2]:.8e})" for u in U)
@@ -85,20 +92,16 @@ def main() -> None:
     )
 
     # Replace existing internalField (uniform or nonuniform) in 0/U
-    # This targets either:
-    #   internalField uniform (.. .. ..);
-    # or
-    #   internalField nonuniform List<vector> ... );
     txtU2, nsubs = re.subn(
-        r"internalField\s+(?:uniform\s+\([^\)]+\)|nonuniform\s+List<vector>\s*\n\d+\s*\n\([\s\S]*?\)\s*\)\s*;)\s*;",
-        new_internal.strip() + "\n",
+        r"internalField\s+(?:uniform\s+\([^\)]+\)|nonuniform\s+List<vector>\s*\n\d+\s*\n\([\s\S]*?\)\s*);",
+        new_internal.strip(),
         txtU,
         count=1,
         flags=re.M
     )
 
     if nsubs == 0:
-        # Fall back to a simpler uniform-only replacement (covers many cases)
+        # Fall back to a simpler uniform-only replacement
         txtU2, nsubs = re.subn(
             r"internalField\s+uniform\s+\([^\)]+\);\s*",
             new_internal,
@@ -110,19 +113,22 @@ def main() -> None:
     if nsubs == 0:
         raise RuntimeError(
             "Could not find/replace internalField in 0/U.\n"
-            "Paste your 0/U internalField lines here and I’ll match the exact format."
         )
 
-    # Backup and write
+    # Backup if not already exists (assuming 0/U is now the "good" one restored from .bak)
     bak = Ufile.with_suffix(".bak")
-    bak.write_text(txtU)
+    if not bak.exists():
+        bak.write_text(txtU)
+        print(f"✅ Backup saved as: {bak}")
+    else:
+        print(f"⚠️  Backup {bak} already exists, not overwriting.")
+
     Ufile.write_text(txtU2)
 
     print(f"✅ Updated 0/U internalField with random noise")
-    print(f"   amp   = {amp} m/s")
+    print(f"   amp   = {amp}")
     print(f"   seed  = {seed}")
     print(f"   cells = {nCells}")
-    print(f"✅ Backup saved as: {bak}")
 
 
 if __name__ == "__main__":
